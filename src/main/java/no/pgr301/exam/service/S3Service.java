@@ -1,0 +1,34 @@
+package no.pgr301.exam.service;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.util.UUID;
+
+@Service
+public class S3Service {
+
+    private final S3Client s3;
+    private final String bucket;
+
+    public S3Service(S3Client s3, @Value("${app.s3.bucket}") String bucket) {
+        this.s3 = s3;
+        this.bucket = bucket;
+    }
+
+    public String upload(byte[] bytes, String originalName, String contentType) {
+        String key = "uploads/" + UUID.randomUUID() + "-" + (originalName == null ? "image" : originalName);
+        s3.putObject(
+                PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .contentType(contentType == null ? "application/octet-stream" : contentType)
+                        .build(),
+                RequestBody.fromBytes(bytes)
+        );
+        return key;
+    }
+}
