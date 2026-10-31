@@ -21,3 +21,15 @@ variable "bedrock_model_id" {
   type        = string
   default     = "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
 }
+
+variable "bedrock_latency_threshold_ms" {
+  description = "Alarmgrense for snittlig svartid mot Bedrock, i millisekunder"
+  type        = number
+  default     = 30000
+}
+
+variable "alarm_email" {
+  description = "E-postadresse som får alarmvarsler"
+  type        = string
+  default     = ""
+}

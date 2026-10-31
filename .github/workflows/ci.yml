@@ -54,11 +54,9 @@ jobs:
           docker push --all-tags "$HUB_IMAGE"
 
   terraform:
-    # Kjører først når imaget er bygget og ligger i ECR
     needs: build-and-push
     runs-on: ubuntu-latest
 
-    # Hindrer at to apply-kjøringer går samtidig mot samme state
     concurrency:
       group: terraform-wishifai-51
       cancel-in-progress: false
@@ -68,8 +66,8 @@ jobs:
         working-directory: infra
 
     env:
-      # Image-taggen fra byggejobben sendes inn som Terraform-variabel
       TF_VAR_image_tag: ${{ needs.build-and-push.outputs.image_tag }}
+      TF_VAR_alarm_email: ${{ vars.ALARM_EMAIL }}
 
     steps:
       - uses: actions/checkout@v6
@@ -87,7 +85,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Feiler pipelinen dersom koden ikke er formatert
       - name: Terraform fmt
         run: terraform fmt -check -recursive
 

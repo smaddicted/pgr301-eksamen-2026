@@ -19,3 +19,7 @@ output "task_role_arn" {
 output "image_uri" {
   value = local.image_uri
 }
+
+output "dashboard_url" {
+  value = "https://${var.region}.console.aws.amazon.com/cloudwatch/home?region=${var.region}#dashboards/dashboard/${aws_cloudwatch_dashboard.main.dashboard_name}"
+}

@@ -8,7 +8,7 @@ terraform {
     }
   }
 
-  # Remote state i den delte bucketen (oppgave 2B).
+  # Remote state i den delte bucketen
   # Backend-blokken kan ikke bruke variabler, derfor er verdiene skrevet inn direkte.
   backend "s3" {
     bucket       = "pgr301-terraform-state"
@@ -22,7 +22,7 @@ terraform {
 provider "aws" {
   region = var.region
 
-  # Tagger alle ressurser, slik at de er lette å finne igjen i den delte kontoen
+  # Tagger alle ressurser med kandidatnummer
   default_tags {
     tags = {
       Project   = "wishifai"
