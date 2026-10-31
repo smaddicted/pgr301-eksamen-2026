@@ -52,3 +52,53 @@ jobs:
             -t "$HUB_IMAGE:$TAG" -t "$HUB_IMAGE:latest" .
           docker push --all-tags "$ECR_IMAGE"
           docker push --all-tags "$HUB_IMAGE"
+
+  terraform:
+    # Kjører først når imaget er bygget og ligger i ECR
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    # Hindrer at to apply-kjøringer går samtidig mot samme state
+    concurrency:
+      group: terraform-wishifai-51
+      cancel-in-progress: false
+
+    defaults:
+      run:
+        working-directory: infra
+
+    env:
+      # Image-taggen fra byggejobben sendes inn som Terraform-variabel
+      TF_VAR_image_tag: ${{ needs.build-and-push.outputs.image_tag }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.16.6
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Feiler pipelinen dersom koden ikke er formatert
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve -input=false
+
+      - name: Show service URL
+        run: terraform output -raw service_url
