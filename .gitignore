@@ -1,0 +1,17 @@
+target/
+*.class
+*.jar
+*.war
+
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+.env
+*.local
