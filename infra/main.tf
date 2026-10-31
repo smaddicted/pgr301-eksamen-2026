@@ -72,11 +72,15 @@ resource "aws_iam_role_policy" "task" {
         ]
       },
       {
-        # MetricsConfig publiserer metrikker til CloudWatch (oppgave 3)
+        # MetricsConfig publiserer metrikker til CloudWatch (oppgave 3).
+        # PutMetricData har ikke ressursnivå-tilgang, så tilgangen låses til egen namespace
         Sid      = "PublishMetrics"
         Effect   = "Allow"
         Action   = "cloudwatch:PutMetricData"
         Resource = "*"
+        Condition = {
+          StringEquals = { "cloudwatch:namespace" = local.name }
+        }
       }
     ]
   })
