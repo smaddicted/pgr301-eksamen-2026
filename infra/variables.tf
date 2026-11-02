@@ -23,7 +23,7 @@ variable "bedrock_model_id" {
 }
 
 variable "bedrock_latency_threshold_ms" {
-  description = "Alarmgrense for snittlig svartid mot Bedrock, i millisekunder"
+  description = "Alarmgrense for gjennomsnittlig svartid mot Bedrock, i millisekunder"
   type        = number
   default     = 30000
 }
